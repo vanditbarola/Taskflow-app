@@ -101,13 +101,7 @@ To deploy your own version:
 - Host the contents of `Taskflow app/` on any static web server (GitHub Pages, Netlify, Vercel, etc.)
 - No build step or backend required.
 
----
 
-## Screenshots
-
-<!-- Add screenshots here if desired -->
-
----
 
 ## Contributing
 
