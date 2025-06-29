@@ -17,8 +17,6 @@ A full-stack frontend Todo application built with HTML, CSS (Tailwind), and Vani
 - [Testing Checklist](#-testing-checklist)
 - [Screenshots](#-screenshots)
 - [Contributing](#-contributing)
-- [License](#-license)
-
 ## ✨ Features
 
 ### 🔐 User Authentication & Registration
@@ -83,18 +81,6 @@ Taskflow app/
 3. Register with your name and date of birth
 4. Start managing your tasks!
 
-### Local Development
-```bash
-# Navigate to project directory
-cd "Taskflow app"
-
-# Start local server (optional)
-python -m http.server 8000
-# or
-npx serve .
-
-# Open http://localhost:8000 in your browser
-```
 
 ## 📈 Development Milestones
 
