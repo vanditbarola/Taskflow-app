@@ -10,10 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- Application State ---
-  const TASKS_KEY = 'taskflow_tasks';
-  const FIRST_LOAD_KEY = 'taskflow_first_load';
+  const TASKS_KEY = `taskflow_tasks_${user.name}`; // Make user-specific
+  const FIRST_LOAD_KEY = `taskflow_first_load_${user.name}`; // Make user-specific
   let tasks = [];
   let searchQuery = '';
+  let priorityFilter = '';
   let activeTab = 'todo';
   let isAnimating = false;
   let isInitialLoad = true;
@@ -122,6 +123,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Main Render Function ---
   function renderApp() {
+    // Store current focus state
+    const activeElement = document.activeElement;
+    const searchInput = document.getElementById('search-input');
+    const newTaskInput = document.getElementById('new-task-input');
+    const wasSearchFocused = activeElement && activeElement.id === 'search-input';
+    const wasNewTaskFocused = activeElement && activeElement.id === 'new-task-input';
+    
     const filteredTasks = getFilteredTasks();
     const stats = getTaskStats();
 
@@ -135,6 +143,22 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     attachEventListeners();
+    
+    // Restore focus after re-render
+    if (wasSearchFocused) {
+      const newSearchInput = document.getElementById('search-input');
+      if (newSearchInput) {
+        newSearchInput.focus();
+        // Move cursor to end of text
+        const length = newSearchInput.value.length;
+        newSearchInput.setSelectionRange(length, length);
+      }
+    } else if (wasNewTaskFocused) {
+      const newTaskInput = document.getElementById('new-task-input');
+      if (newTaskInput) {
+        newTaskInput.focus();
+      }
+    }
   }
 
   // --- Header Component ---
@@ -216,12 +240,17 @@ document.addEventListener('DOMContentLoaded', () => {
             </button>
           </div>
           <div class="flex gap-2">
-            <select id="priority-filter" class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border-0 focus:ring-2 focus:ring-blue-500 transition-all duration-200 shadow-sm text-sm sm:text-base">
+            <select id="priority-filter" class="flex-1 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border-0 focus:ring-2 focus:ring-blue-500 transition-all duration-200 shadow-sm text-sm sm:text-base">
               <option value="">All Priorities</option>
-              <option value="High">High Priority</option>
-              <option value="Medium">Medium Priority</option>
-              <option value="Low">Low Priority</option>
+              <option value="High" ${priorityFilter === 'High' ? 'selected' : ''}>High Priority</option>
+              <option value="Medium" ${priorityFilter === 'Medium' ? 'selected' : ''}>Medium Priority</option>
+              <option value="Low" ${priorityFilter === 'Low' ? 'selected' : ''}>Low Priority</option>
             </select>
+            ${(searchQuery || priorityFilter) ? `
+              <button id="clear-filters" class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border-0 bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all duration-200 shadow-sm text-sm sm:text-base">
+                Clear All
+              </button>
+            ` : ''}
           </div>
         </div>
       </div>
@@ -445,6 +474,12 @@ document.addEventListener('DOMContentLoaded', () => {
       priorityFilter.onchange = handlePriorityFilter;
     }
 
+    // Clear filters button
+    const clearFiltersBtn = document.getElementById('clear-filters');
+    if (clearFiltersBtn) {
+      clearFiltersBtn.onclick = clearSearch;
+    }
+
     // Tab navigation
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.onclick = () => handleTabChange(btn.getAttribute('data-tab'));
@@ -491,7 +526,21 @@ document.addEventListener('DOMContentLoaded', () => {
   function handleSignOut() {
     showLoading();
     setTimeout(() => {
-      localStorage.clear();
+      // Clear all user-specific data
+      localStorage.removeItem('taskflow_user');
+      localStorage.removeItem(TASKS_KEY);
+      localStorage.removeItem(FIRST_LOAD_KEY);
+      
+      // Also clear any other potential user-specific keys
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('taskflow_')) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
       window.location.href = 'index.html';
     }, 500);
   }
@@ -503,12 +552,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function clearSearch() {
     searchQuery = '';
+    priorityFilter = '';
     document.getElementById('search-input').value = '';
     renderApp();
   }
 
   function handlePriorityFilter(e) {
-    // Implementation for priority filtering can be added here
+    priorityFilter = e.target.value;
     renderApp();
   }
 
@@ -602,6 +652,10 @@ document.addEventListener('DOMContentLoaded', () => {
       filtered = filtered.filter(task => 
         task.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
+    }
+    
+    if (priorityFilter) {
+      filtered = filtered.filter(task => task.priority === priorityFilter);
     }
     
     return filtered.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
