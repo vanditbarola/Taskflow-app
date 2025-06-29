@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TaskFlow - Welcome</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lexend:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+            lexend: ['Lexend', 'sans-serif'],
+          },
+          colors: {
+            primary: '#2563EB',
+            accent: '#F59E0B',
+          },
+          keyframes: {
+            fadeSlide: {
+              '0%': { opacity: 0, transform: 'translateY(30px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' },
+            },
+            blob: {
+              '0%, 100%': { transform: 'translate(0,0) scale(1)' },
+              '50%': { transform: 'translate(20px, -20px) scale(1.1)' },
+            },
+          },
+          animation: {
+            fadeSlide: 'fadeSlide 0.8s ease-out',
+            blob: 'blob 20s infinite',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    .card-hover {
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .card-hover:hover {
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      transform: translateY(-4px);
+    }
+    .button-press:active {
+      transform: scale(0.97);
+    }
+  </style>
+</head>
+<body class="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-100 via-white to-blue-50 flex items-center justify-center font-inter">
+
+  <!-- Animated Background Blobs -->
+  <div class="absolute top-0 left-0 w-72 h-72 bg-blue-300 opacity-30 rounded-full mix-blend-multiply filter blur-2xl animate-blob"></div>
+  <div class="absolute bottom-0 right-0 w-72 h-72 bg-yellow-200 opacity-30 rounded-full mix-blend-multiply filter blur-2xl animate-blob animation-delay-2000"></div>
+  <div class="absolute top-1/2 left-1/2 w-96 h-96 bg-pink-200 opacity-20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+
+  <!-- Card -->
+  <div class="relative z-10 w-full max-w-md bg-white/80 backdrop-blur-lg border border-blue-100 shadow-xl rounded-2xl p-8 animate-fadeSlide card-hover">
+    <h1 class="text-4xl font-lexend font-bold text-center text-primary mb-2">TaskFlow</h1>
+    <p class="text-center text-gray-600 mb-6">Get organized and boost your productivity.</p>
+    <form id="registration-form" class="space-y-4">
+      <div>
+        <label for="name" class="block text-gray-700 font-medium mb-1">Your Name</label>
+        <div class="relative">
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            placeholder="e.g., Alex Johnson"
+            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none transition"
+          />
+          <svg class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.88 6.197M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <label for="dob" class="block text-gray-700 font-medium mb-1">Date of Birth</label>
+        <div class="relative">
+          <input
+            type="date"
+            id="dob"
+            name="dob"
+            required
+            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none transition"
+          />
+          <svg class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+      </div>
+      <button
+        type="submit"
+        class="w-full bg-primary hover:bg-accent text-white font-semibold py-2 rounded-lg transition transform button-press"
+      >
+        Continue
+      </button>
+      <p id="error-message" class="text-red-500 text-sm mt-2 hidden"></p>
+    </form>
+    <div id="locale-placeholder" data-locale="guj" class="hidden"></div>
+  </div>
+  <script src="js/index.js"></script>
+</body>
+</html>
